@@ -6,45 +6,20 @@ MODULE SPS_VARS
   SAVE
 
 !-------set the spectral library------!
-#ifndef MILES
 #define MILES 1
-#endif
-
-#ifndef BASEL
 #define BASEL 0
-#endif
-
 ! "C3K" currently under development.  do not use.
-#ifndef C3K
 #define C3K 0
-#endif
 
 !------set the isochrone library------!
-#ifndef MIST
-#define MIST 1
-#endif
-
-#ifndef PADOVA
-#define PADOVA 0
-#endif
-
-#ifndef PARSEC
+#define MIST 0
+#define PADOVA 1
 #define PARSEC 0
-#endif
-
-#ifndef BASTI
 #define BASTI 0
-#endif
-
-#ifndef GENEVA
 #define GENEVA 0
-#endif
-
 !note that in the case of BPASS the SSPs are already pre-computed
 !so the spectral library, IMF, etc. is fixed in this case.  
-#ifndef BPASS
 #define BPASS 0
-#endif
   
   !--------------------------------------------------------------!
   !--------------------------------------------------------------!
@@ -292,7 +267,7 @@ MODULE SPS_VARS
   !number of emission lines and continuum emission points
   INTEGER, PARAMETER :: nemline=128, nlam_nebcont=1963
   !number of metallicity, age, and ionization parameter points
-  INTEGER, PARAMETER :: nebnz=11, nebnage=10, nebnip=7
+  INTEGER, PARAMETER :: nebnz=2, nebnage=2, nebnip=2, nebpagb=2, nebnh=2
   !number of optical depths for AGN dust models
   INTEGER, PARAMETER :: nagndust=9
   !number of spectral points in the input library
@@ -458,11 +433,13 @@ MODULE SPS_VARS
 
   !nebular emission model
   REAL(SP), DIMENSION(nemline) :: nebem_line_pos=0.
-  REAL(SP), DIMENSION(nemline,nebnz,nebnage,nebnip) :: nebem_line=0.
-  REAL(SP), DIMENSION(nspec,nebnz,nebnage,nebnip) :: nebem_cont=0.
+  REAL(SP), DIMENSION(nemline,nebnz,nebnage,nebnip,nebpagb,nebnh) :: nebem_line=0.
+  REAL(SP), DIMENSION(nspec,nebnz,nebnage,nebnip,nebpagb,nebnh) :: nebem_cont=0.
   REAL(SP), DIMENSION(nebnz)   :: nebem_logz=0.
   REAL(SP), DIMENSION(nebnage) :: nebem_age=0.
   REAL(SP), DIMENSION(nebnip)  :: nebem_logu=0.
+  REAL(SP), DIMENSION(nebpagb) :: nebem_pagb=0
+  REAL(SP), DIMENSION(nebnh)   :: nebem_nh=0.
   !minimum resolution for nebular lines, based
   !on the resolution of the spectral libraries.
   REAL(SP), DIMENSION(nspec)   :: neb_res_min=0.0
@@ -506,8 +483,8 @@ MODULE SPS_VARS
           dust1_index=-1.0,mdave=0.5,sf_start=0.,sf_trunc=0.,sf_slope=0.,&
           duste_gamma=0.01,duste_umin=1.0,duste_qpah=3.5,fcstar=1.0,&
           masscut=150.0,sigma_smooth=0.,agb_dust=1.0,min_wave_smooth=1E3,&
-          max_wave_smooth=1E4,gas_logu=-2.0,gas_logz=0.,igm_factor=1.0,&
-          fagn=0.0,agn_tau=10.0
+          max_wave_smooth=1E4,gas_logu=-2.0,gas_logz=0.,igm_factor=1.0,& 	
+          fagn=0.0,agn_tau=10.0,gas_nh=100.,neb_pagb=1.0
      INTEGER :: zmet=1,sfh=0,wgp1=1,wgp2=1,wgp3=1,evtype=-1
      INTEGER, DIMENSION(nbands) :: mag_compute=1
      INTEGER, DIMENSION(nt) :: ssp_gen_age=1

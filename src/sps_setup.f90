@@ -12,7 +12,7 @@ SUBROUTINE SPS_SETUP(zin)
   USE sps_vars; USE sps_utils
   IMPLICIT NONE
   INTEGER, INTENT(in) :: zin
-  INTEGER :: stat=1,n,i,j,m,jj,k,i1,i2
+  INTEGER :: stat=1,n,i,j,m,jj,k,l,p,i1,i2
   INTEGER, PARAMETER :: ntlam=1221,nspec_agb=6146,nspec_aringer=9032
   INTEGER, PARAMETER :: nlamwr=1963,nspec_pagb=9281
   INTEGER, PARAMETER :: nzwmb=12, nspec_wmb=5508
@@ -217,7 +217,8 @@ SUBROUTINE SPS_SETUP(zin)
   !----------------------------------------------------------------!
   !-----------------Read in spectral libraries---------------------!
   !----------------------------------------------------------------!
-
+  print*,"***********************"
+  print*,spec_type, isoc_type
   IF (isoc_type.NE.'bpss') THEN
   
   !read in wavelength array and spectral metallicity grid
@@ -901,12 +902,16 @@ SUBROUTINE SPS_SETUP(zin)
      DO i=1,nebnz
         DO j=1,nebnage
            DO k=1,nebnip
-              READ(99,*,iostat=stat) nebem_logz(i),nebem_age(j),nebem_logu(k)
-              READ(99,*,iostat=stat) readcontneb
-              !interpolate onto the main wavelength grid
-              !some values in the table are 0.0, set a floor of 1E-95
-              nebem_cont(:,i,j,k) = linterparr(readlambneb,&
-                   LOG10(readcontneb+10**(-95.d0)),spec_lambda)
+	      DO l=1,nebpagb
+                 DO p=1,nebnh	
+                    READ(99,*,iostat=stat) nebem_logz(i),nebem_age(j),nebem_logu(k),nebem_pagb(l),nebem_nh(p)
+                    READ(99,*,iostat=stat) readcontneb
+                    !interpolate onto the main wavelength grid
+                    !some values in the table are 0.0, set a floor of 1E-95
+                    nebem_cont(:,i,j,k,l,p) = linterparr(readlambneb,&
+                    LOG10(readcontneb+10**(-95.d0)),spec_lambda)
+                 ENDDO
+              ENDDO
            ENDDO
         ENDDO
      ENDDO
@@ -931,8 +936,12 @@ SUBROUTINE SPS_SETUP(zin)
      DO i=1,nebnz
         DO j=1,nebnage
            DO k=1,nebnip
-              READ(99,*,iostat=stat) nebem_logz(i),nebem_age(j),nebem_logu(k)
-              READ(99,*,iostat=stat) nebem_line(:,i,j,k)
+              DO l=1,nebpagb
+                 DO p=1,nebnh	
+                    READ(99,*,iostat=stat) nebem_logz(i),nebem_age(j),nebem_logu(k),nebem_pagb(l),nebem_nh(p)
+                    READ(99,*,iostat=stat) nebem_line(:,i,j,k,l,p)
+              ENDDO
+	      ENDDO
            ENDDO
         ENDDO
      ENDDO
